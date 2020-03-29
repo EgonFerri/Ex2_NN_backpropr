@@ -102,11 +102,11 @@ class TwoLayerNet(object):
 
 
         
-        a1=X
-        z2=a1.dot(W1)+b1
-        a2=ReLU(z2)
-        z3=a2.dot(W2)+b2
-        scores=softmax(z3)
+        a1 = X
+        z2 = a1.dot(W1) + b1
+        a2 = ReLU(z2)
+        z3 = a2.dot(W2) + b2
+        scores = softmax(z3)
         
 
         # *****END OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
@@ -131,13 +131,13 @@ class TwoLayerNet(object):
         
         # *****START OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
         
-        like=scores[range(5), y] #probabilities for the true labels
-        log_like=-np.log(like)
-        loss_no_reg= np.sum(log_like)/5
+        like = scores[range(N), y] #probabilities for the true labels
+        log_like = - np.log(like)
+        loss_no_reg = np.sum(log_like)/N
 
-        regola= reg* (np.linalg.norm(W1)**2+np.linalg.norm(W2)**2)
+        regula = reg* (np.linalg.norm(W1)**2+np.linalg.norm(W2)**2)
 
-        loss= loss_no_reg+regola
+        loss = loss_no_reg + regula
         
         # *****END OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
 
@@ -151,11 +151,17 @@ class TwoLayerNet(object):
         ##############################################################################
 
         # *****START OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
-        
-        
+        kron = np.zeros((scores.shape[0],scores.shape[1]))
+        kron[range(N), y] = 1
+        grads["W2"] = (1/N) * (scores - kron).T.dot(a2).T + 2*reg*W2
 
-        pass
+        b2_der = np.ones(N)
+        grads["b2"] = (1/N) * (scores - kron).T.dot(b2_der)
 
+        grads["W1"] = (1/N) * ((scores - kron).dot(W2.T)* np.where(z2 < 0,0,1)).T.dot(a1).T + 2*reg*W1
+
+        b1_der = np.ones(z2.shape[0])
+        grads["b1"] = (1/N) * ((scores - kron).dot(W2.T)* np.where(z2 < 0,0,1)).T.dot(b1_der)
         # *****END OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
 
         return loss, grads
