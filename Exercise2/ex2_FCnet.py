@@ -275,10 +275,26 @@ best_net = None # store the best model into this
 
 # *****START OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
 
+hidden_size=50
+niter=1000
+batch=200
+lerate=1e-4
+reg=0.25
 
+net = TwoLayerNet(input_size, hidden_size, num_classes) #initialize
 
-pass
+# Train the network
+stats = net.train(X_train, y_train, X_val, y_val,
+            num_iters=1000, batch_size=200,
+            learning_rate=1e-4, learning_rate_decay=0.95,
+            reg=0.25, verbose=False)
 
+# Predict on the validation set
+print('-----------')
+print('hidden size: ',hidden_size, ', num_iters: ',niter, ', batch size: ',batch, ', learning_rate: ', lerate, ', regula: ',reg )
+val_acc = (net.predict(X_val) == y_val).mean()
+print('Validation accuracy: ', val_acc)
+print('------------')
 # *****END OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
 
 

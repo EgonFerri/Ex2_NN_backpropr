@@ -157,7 +157,7 @@ class TwoLayerNet(object):
 
         b2_der = np.ones(N)
         grads["b2"] = (1/N) * (scores - kron).T.dot(b2_der)
-
+        
         grads["W1"] = (1/N) * ((scores - kron).dot(W2.T)* np.where(z2 < 0,0,1)).T.dot(a1).T + 2*reg*W1
 
         b1_der = np.ones(z2.shape[0])
@@ -210,10 +210,10 @@ class TwoLayerNet(object):
             
             # *****START OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
             
+            index=np.random.randint(low=0, high=num_train, size=batch_size)
+            X_batch=X[index]
+            y_batch=y[index]
             
-            
-            pass
-        
             # *****END OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
 
             # Compute loss and gradients using the current minibatch
@@ -229,10 +229,9 @@ class TwoLayerNet(object):
             
             # *****START OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
             
+            for param in self.params.keys():
+              self.params[param]-= learning_rate*grads[param]
             
-            
-            pass
-        
             # *****END OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
 
             if verbose and it % 100 == 0:
@@ -280,9 +279,23 @@ class TwoLayerNet(object):
         
         # *****START OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
 
+        W1, b1 = self.params['W1'], self.params['b1']
+        W2, b2 = self.params['W2'], self.params['b2']
 
+        def ReLU(z):
+          return np.maximum(0, z)
 
-        pass
+        def softmax(z):
+          e=np.exp(z)
+          return  e/e.sum(axis=1, keepdims=True)
+
+        a1 = X
+        z2 = a1.dot(W1) + b1
+        a2 = ReLU(z2)
+        z3 = a2.dot(W2) + b2
+        scores = softmax(z3)
+
+        y_pred=np.argmax(scores, axis=1)
 
         # *****END OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
 
