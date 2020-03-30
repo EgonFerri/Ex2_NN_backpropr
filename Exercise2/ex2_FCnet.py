@@ -274,33 +274,31 @@ best_net = None # store the best model into this
 #################################################################################
 
 # *****START OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
-# import itertools
-# from tqdm import tqdm 
+import itertools
+from tqdm import tqdm 
 
 
-# param_grid = {
-# "hidden_size" : [120, 160], "niter" : [3000],"batch":[64, 128, 256, 512], 
-# "lerate": [1e-3,1e-4], "reg" : [1e-4,1e-3]}
-# results = []
-# combinations = list(itertools.product(*param_grid.values()))
-# for comb in tqdm(combinations):
+param_grid = {
+"hidden_size" : [120, 160], "niter" : [2000,3000],"batch":[64, 128, 256, 512], 
+"lerate": [1e-3,1e-4], "reg" : [1e-4,1e-3]}
+results = []
+combinations = list(itertools.product(*param_grid.values()))
+for comb in tqdm(combinations):
     
     
-#     print("current combination :", comb)
-#     print("\n")
-#     # Train the network
-#     net = TwoLayerNet(input_size, comb[0], num_classes)
-#     stats = net.train(X_train, y_train, X_val, y_val,
-#             num_iters=comb[1], batch_size=comb[2],
-#             learning_rate=comb[3], learning_rate_decay=0.95,
-#             reg=comb[4], verbose=False)
-#     val_acc = (net.predict(X_val) == y_val).mean()
-#     results.append(val_acc)
+    print("current combination :", comb)
+    print("\n")
+    # Train the network
+    net = TwoLayerNet(input_size, comb[0], num_classes)
+    stats = net.train(X_train, y_train, X_val, y_val,
+            num_iters=comb[1], batch_size=comb[2],
+            learning_rate=comb[3], learning_rate_decay=0.95,
+            reg=comb[4], verbose=False)
+    val_acc = (net.predict(X_val) == y_val).mean()
+    results.append(val_acc)
 
-# print(results)
-# print(combinations)
-# best_comb = combinations[results.index([max(results)])]
-best_comb = (160, 3000, 512, 0.001, 0.0001)
+
+best_comb = combinations[results.index([max(results)])]
 best_net = TwoLayerNet(input_size, best_comb[0], num_classes)
 stats = best_net.train(X_train, y_train, X_val, y_val,
             num_iters=best_comb[1], batch_size=best_comb[2],
