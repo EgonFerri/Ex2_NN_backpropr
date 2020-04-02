@@ -278,47 +278,82 @@ import itertools
 from tqdm import tqdm 
 import pandas as pd
 
-param_grid = {
-"hidden_size" : [200, 250], "niter" : [4000, 5000],"batch":[256, 512], 
-"lerate": [1e-3,1e-4], "reg" : [1e-3,1e-4]}
-results_val = []
-results_train = []
-combinations = list(itertools.product(*param_grid.values()))
-for comb in tqdm(combinations):
-    
-    
-    print("current combination :", comb)
-    print("\n")
-    # Train the network
-    np.random.seed(123)
-    net = TwoLayerNet(input_size, comb[0], num_classes)
-    stats = net.train(X_train, y_train, X_val, y_val,
-            num_iters=comb[1], batch_size=comb[2],
-            learning_rate=comb[3], learning_rate_decay=0.95,
-            reg=comb[4], verbose=False)
-    val_acc = (net.predict(X_val) == y_val).mean()
-    train_acc = (net.predict(X_train) == y_train).mean()
-
-    results_val.append(val_acc)
-    results_train.append(train_acc)
-
-best_comb = combinations[results_val.index([max(results_val)])]
-zipped = list(zip(combinations,results_train, results_val))
-pd.DataFrame(zipped).rename(columns = {0:"combinations",1:"train accuracy",2:"val accuracy"}).to_csv("results")
+#param_grid = {
+#"hidden_size" : [200, 250], "niter" : [4000, 5000],"batch":[256, 512], 
+#"lerate": [1e-3,1e-4], "reg" : [1e-3,1e-4]}
+#results_val = []
+#results_train = []
+#combinations = list(itertools.product(*param_grid.values()))
+#for comb in tqdm(combinations):
+#    
+#    
+#    print("current combination :", comb)
+#    print("\n")
+#    # Train the network
+#    np.random.seed(123)
+#    net = TwoLayerNet(input_size, comb[0], num_classes)
+#    stats = net.train(X_train, y_train, X_val, y_val,
+#            num_iters=comb[1], batch_size=comb[2],
+#            learning_rate=comb[3], learning_rate_decay=0.95,
+#            reg=comb[4], verbose=False)
+#    val_acc = (net.predict(X_val) == y_val).mean()
+#    train_acc = (net.predict(X_train) == y_train).mean()
+#
+#    results_val.append(val_acc)
+#    results_train.append(train_acc)
+#
+#best_comb = combinations[results_val.index([max(results_val)])]
+#zipped = list(zip(combinations,results_train, results_val))
+#pd.DataFrame(zipped).rename(columns = {0:"combinations",1:"train accuracy",2:"val accuracy"}).to_csv("results.csv")
+#np.random.seed(123)
+best_comb=[250, 5000, 256, 0.001, 0.001]
 np.random.seed(123)
 best_net = TwoLayerNet(input_size, best_comb[0], num_classes)
 stats = best_net.train(X_train, y_train, X_val, y_val,
             num_iters=best_comb[1], batch_size=best_comb[2],
             learning_rate=best_comb[3], learning_rate_decay=0.95,
-            reg=best_comb[4], verbose=False)
+           reg=best_comb[4], verbose=True)
 
-# (160, 3000, 512, 0.001, 0.0001)
 # Predict on the validation set
 print('-----------')
 print('hidden size: ',best_comb[0], ', num_iters: ',best_comb[1], ', batch size: ',best_comb[2], ', learning_rate: ', best_comb[3], ', regula: ',best_comb[4] )
 val_acc = (best_net.predict(X_val) == y_val).mean()
 print('Validation accuracy: ', val_acc)
 print('------------')
+
+#plot
+plt.figure(6)
+plt.subplot(2, 1, 1)
+plt.plot(stats['loss_history'])
+plt.title('Loss history')
+plt.xlabel('Iteration')
+plt.ylabel('Loss')
+
+plt.subplot(2, 1, 2)
+plt.plot(stats['train_acc_history'], label='train')
+plt.plot(stats['val_acc_history'], label='val')
+plt.title('Classification accuracy history')
+plt.xlabel('Epoch')
+plt.ylabel('Classification accuracy')
+plt.legend()
+plt.show()
+
+#check stability running more simulations
+#best_comb=[250, 5000, 256, 0.001, 0.001]
+#results_val=[]
+#results_train=[]
+#for i in tqdm(range(15)):
+#    
+#    best_net = TwoLayerNet(input_size, best_comb[0], num_classes)
+#    stats = best_net.train(X_train, y_train, X_val, y_val,
+#                           num_iters=best_comb[1], batch_size=best_comb[2],
+#                           learning_rate=best_comb[3], learning_rate_decay=0.95,
+#                           reg=best_comb[4], verbose=False)
+#    val_acc = (best_net.predict(X_val) == y_val).mean()
+#    train_acc = (best_net.predict(X_train) == y_train).mean()
+#    results_val.append(val_acc)
+#    results_train.append(train_acc)
+#pd.DataFrame({'Train accuracy':results_train, 'Validation accuracy':results_val}).to_csv('simul.csv')   
 
 # *****END OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
 
