@@ -306,7 +306,7 @@ import pandas as pd
 #zipped = list(zip(combinations,results_train, results_val))
 #pd.DataFrame(zipped).rename(columns = {0:"combinations",1:"train accuracy",2:"val accuracy"}).to_csv("results.csv")
 #np.random.seed(123)
-best_comb=[250, 5000, 256, 0.001, 0.001]
+best_comb=[250, 500, 256, 0.001, 0.001]
 np.random.seed(123)
 best_net = TwoLayerNet(input_size, best_comb[0], num_classes)
 stats = best_net.train(X_train, y_train, X_val, y_val,
@@ -370,3 +370,38 @@ show_net_weights(best_net)
 test_acc = (best_net.predict(X_test) == y_test).mean()
 print('Test accuracy: ', test_acc)
 
+######### BONUS ADVANCED NEURAL NET #########
+
+
+from two_layernet_advanced import TwoLayerNetAdvanced
+best_comb=[250, 5000, 512, 0.001, 0.001]
+np.random.seed(123)
+p=0.8
+best_net = TwoLayerNetAdvanced(input_size, best_comb[0], num_classes)
+stats = best_net.train(X_train, y_train,p, X_val, y_val,
+            num_iters=best_comb[1], batch_size=best_comb[2],
+            learning_rate=best_comb[3], learning_rate_decay=0.95,
+           reg=best_comb[4], verbose=True)
+
+# Predict on the validation set
+print('-----------')
+print('hidden size: ',best_comb[0], ', num_iters: ',best_comb[1], ', batch size: ',best_comb[2], ', learning_rate: ', best_comb[3], ', regula: ',best_comb[4] )
+val_acc = (best_net.predict(X_val) == y_val).mean()
+print('Validation accuracy: ', val_acc)
+print('------------')
+
+plt.figure(7)
+plt.subplot(2, 1, 1)
+plt.plot(stats['loss_history'])
+plt.title('Loss history')
+plt.xlabel('Iteration')
+plt.ylabel('Loss')
+
+plt.subplot(2, 1, 2)
+plt.plot(stats['train_acc_history'], label='train')
+plt.plot(stats['val_acc_history'], label='val')
+plt.title('Classification accuracy history')
+plt.xlabel('Epoch')
+plt.ylabel('Classification accuracy')
+plt.legend()
+plt.show()
