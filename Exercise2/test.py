@@ -12,8 +12,11 @@ X_train, y_train, X_val, y_val, X_test, y_test = get_CIFAR10_data()
 best_comb = [250, 5000, 512, 0.001, 0.001]
 np.random.seed(123)
 p = 0.8
+beta1 = 0.9
+beta2 = 0.999
+eps = 1e-7
 best_net = TwoLayerNetAdvanced(input_size, best_comb[0], num_classes)
-stats = best_net.train(X_train, y_train,p, X_val, y_val,
+stats = best_net.train(X_train, y_train,p, X_val, y_val, beta1, beta2, eps,
             num_iters=best_comb[1], batch_size=best_comb[2],
             learning_rate=best_comb[3], learning_rate_decay=0.95,
            reg=best_comb[4], verbose=True)

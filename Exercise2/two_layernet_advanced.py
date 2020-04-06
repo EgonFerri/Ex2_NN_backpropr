@@ -57,11 +57,11 @@ class TwoLayerNetAdvanced(object):
         self.sqrs['W2'] = 0
         self.sqrs['b2'] = 0
 
-        self.v_ = {}
-        self.v_['W1'] = 0
-        self.v_['b1'] = 0
-        self.v_['W2'] = 0
-        self.v_['b2'] = 0
+        self.v = {}
+        self.v['W1'] = 0
+        self.v['b1'] = 0
+        self.v['W2'] = 0
+        self.v['b2'] = 0
 
     def loss(self, X,p,  y=None, reg=0.0):
         """
@@ -115,8 +115,8 @@ class TwoLayerNetAdvanced(object):
         a1 = X
         z2 = a1.dot(W1) + b1
         a2 = ReLU(z2)
-        u1=(np.random.rand(*a2.shape)<p)/p
-        a2*=u1
+        u1 = (np.random.rand(*a2.shape)<p)/p
+        a2 *= u1
         z3 = a2.dot(W2) + b2
         scores = softmax(z3)
         
@@ -177,7 +177,7 @@ class TwoLayerNetAdvanced(object):
 
 
 
-    def train(self, X, y,p, X_val, y_val,
+    def train(self, X, y,p, X_val, y_val,beta1, beta2, eps,
               learning_rate=1e-3, learning_rate_decay=0.95,
               reg=5e-6, num_iters=100,
               batch_size=200, verbose=False):
@@ -237,16 +237,12 @@ class TwoLayerNetAdvanced(object):
             #########################################################################
             
             # *****START OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
-            beta1 = 0.9
-            beta2 = 0.999
-            eps = 1e-7
-            for param, sqr in zip(self.params.keys(),self.sqrs.keys()):
-
+            for param in self.params.keys():
               g = grads[param]/batch_size
-              self.v_[sqr] = beta1 * self.v_[sqr] + (1. - beta1) * g
-              self.sqrs[sqr] = beta2 * self.sqrs[sqr] + (1. - beta2) * np.square(g)
-              sqr2 = self.sqrs[sqr] / (1 - beta2 ** (it+1))
-              v2 = self.v_[sqr] / (1 - beta1 ** (it+1))
+              self.v[param] = beta1 * self.v[param] + (1. - beta1) * g
+              self.sqrs[param] = beta2 * self.sqrs[param] + (1. - beta2) * np.square(g)
+              sqr2 = self.sqrs[param] / (1 - np.power(beta2 ,it+1))
+              v2 = self.v[param] / (1 - np.power(beta1 ,it+1))
               self.params[param] -= learning_rate * v2 / (np.sqrt(sqr2) + eps)
 
             # *****END OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
