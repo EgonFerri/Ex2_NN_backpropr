@@ -57,6 +57,11 @@ class TwoLayerNetAdvanced(object):
         self.sqrs['W2'] = 0
         self.sqrs['b2'] = 0
 
+        self.v_ = {}
+        self.v_['W1'] = 0
+        self.v_['b1'] = 0
+        self.v_['W2'] = 0
+        self.v_['b2'] = 0
 
     def loss(self, X,p,  y=None, reg=0.0):
         """
@@ -232,13 +237,18 @@ class TwoLayerNetAdvanced(object):
             #########################################################################
             
             # *****START OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
-            eps=1e-7
-            for param, sqr in zip(self.params.keys(), self.sqrs.keys()):
-              g=grads[param]/batch_size
-              self.sqrs[sqr]+=np.square(g)
-              res= learning_rate* g /np.sqrt(self.sqrs[sqr]+eps)
-              self.params[param]-= res
-            
+            beta1 = 0.9
+            beta2 = 0.999
+            eps = 1e-7
+            for param, sqr in zip(self.params.keys(),self.sqrs.keys()):
+
+              g = grads[param]/batch_size
+              self.v_[sqr] = beta1 * self.v_[sqr] + (1. - beta1) * g
+              self.sqrs[sqr] = beta2 * self.sqrs[sqr] + (1. - beta2) * np.square(g)
+              sqr2 = self.sqrs[sqr] / (1 - beta2 ** (it+1))
+              v2 = self.v_[sqr] / (1 - beta1 ** (it+1))
+              self.params[param] -= learning_rate * v2 / (np.sqrt(sqr2) + eps)
+
             # *****END OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
 
             if verbose and it % 100 == 0:
