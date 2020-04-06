@@ -107,12 +107,14 @@ class MultiLayerPerceptron(nn.Module):
         # hidden_layers[-1] --> num_classes                                             #
         # Make use of linear and relu layers from the torch.nn module                   #
         #################################################################################
-        
-        layers = [] #Use the layers list to store a variable number of layers
-        
-        # *****START OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
 
-        
+        layers = [] #Use the layers list to store a variable number of layers
+
+        # *****START OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
+        layers.append(nn.Linear(input_size, hidden_layers[0]))
+        layers.append(nn.ReLU())
+        layers.append(nn.Linear(hidden_layers[0], num_classes))
+
 
         # *****END OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
 
@@ -127,13 +129,13 @@ class MultiLayerPerceptron(nn.Module):
         # Softmax is only required for the loss computation and the criterion used below#
         # nn.CrossEntropyLoss() already integrates the softmax and the log loss together#
         #################################################################################
-        
-        # *****START OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
 
+        # *****START OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
+        out = self.layers(x)
 
 
         # *****END OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
-        
+
         return out
 
 model = MultiLayerPerceptron(input_size, hidden_size, num_classes).to(device)
@@ -169,6 +171,17 @@ if train:
             #################################################################################
             # *****START OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
 
+            # Pass images to the model to compute predicted labels
+            images = images.view(-1, input_size)
+            pred_labels = model(images)
+
+            # Compute the loss using the predicted labels and the actual labels.
+            loss = criterion(pred_labels, labels)
+
+            # Compute gradients and update the model using the optimizer
+            optimizer.zero_grad()
+            loss.backward()
+            optimizer.step()
 
 
             # *****END OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
@@ -192,8 +205,9 @@ if train:
                 # 2. Get the most confident predicted class        #
                 ####################################################
                 # *****START OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
+                images = images.view(-1, input_size)
+                predicted = torch.argmax(model(images), dim=1)
 
-            
 
                 # *****END OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
                 total += labels.size(0)
@@ -224,12 +238,12 @@ else:
 
     best_model = None
     best_model = torch.load('model.ckpt')
-    
+
     model.load_state_dict(best_model)
-    
+
     # Test the model
     model.eval() #set dropout and batch normalization layers to evaluation mode
-    
+
     # In test phase, we don't need to compute gradients (for memory efficiency)
     with torch.no_grad():
         correct = 0
@@ -243,8 +257,9 @@ else:
             # 2. Get the most confident predicted class        #
             ####################################################
             # *****START OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
+            images = images.view(-1, input_size)
+            predicted = torch.argmax(model(images), dim=1)
 
-            
 
             # *****END OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
             total += labels.size(0)
@@ -253,4 +268,3 @@ else:
                 break
 
         print('Accuracy of the network on the {} test images: {} %'.format(total, 100 * correct / total))
-
