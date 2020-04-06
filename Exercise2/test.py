@@ -6,13 +6,12 @@ from data_utils import get_CIFAR10_data
 from vis_utils import visualize_grid
 from two_layernet_advanced import TwoLayerNetAdvanced
 input_size = 32 * 32 * 3
-hidden_size = 50
 num_classes = 10
 
 X_train, y_train, X_val, y_val, X_test, y_test = get_CIFAR10_data()
-best_comb=[250, 5000, 512, 0.001, 0.001]
+best_comb = [250, 5000, 512, 0.001, 0.001]
 np.random.seed(123)
-p=0.8
+p = 0.8
 best_net = TwoLayerNetAdvanced(input_size, best_comb[0], num_classes)
 stats = best_net.train(X_train, y_train,p, X_val, y_val,
             num_iters=best_comb[1], batch_size=best_comb[2],
@@ -41,3 +40,6 @@ plt.xlabel('Epoch')
 plt.ylabel('Classification accuracy')
 plt.legend()
 plt.show()
+
+test_acc = (best_net.predict(X_test) == y_test).mean()
+print('Test accuracy: ', test_acc)
