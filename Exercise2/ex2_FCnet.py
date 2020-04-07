@@ -274,9 +274,20 @@ best_net = None # store the best model into this
 #################################################################################
 
 # *****START OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
-import itertools
-from tqdm import tqdm 
-import pandas as pd
+
+
+
+"""
+
+grid search to find the best hyper-parameters
+
+"""
+
+
+
+# import itertools
+# from tqdm import tqdm 
+# import pandas as pd
 
 #param_grid = {
 #"hidden_size" : [200, 250], "niter" : [4000, 5000],"batch":[256, 512], 
@@ -305,14 +316,22 @@ import pandas as pd
 #best_comb = combinations[results_val.index([max(results_val)])]
 #zipped = list(zip(combinations,results_train, results_val))
 #pd.DataFrame(zipped).rename(columns = {0:"combinations",1:"train accuracy",2:"val accuracy"}).to_csv("results.csv")
-#np.random.seed(123)
-best_comb=[250, 500, 256, 0.001, 0.001]
+
+
+
+import time
+from sklearn.decomposition import PCA
+
+start = time.time()
+
+best_comb = [250, 5000, 256, 0.001, 0.001]
 np.random.seed(123)
 best_net = TwoLayerNet(input_size, best_comb[0], num_classes)
 stats = best_net.train(X_train, y_train, X_val, y_val,
             num_iters=best_comb[1], batch_size=best_comb[2],
             learning_rate=best_comb[3], learning_rate_decay=0.95,
            reg=best_comb[4], verbose=True)
+print("code execution time: ",time.time() - start)
 
 # Predict on the validation set
 print('-----------')
@@ -374,15 +393,27 @@ print('Test accuracy: ', test_acc)
 
 
 from two_layernet_advanced import TwoLayerNetAdvanced
-best_comb=[250, 5000, 512, 0.001, 0.001]
+
+best_comb = [250, 5000, 256, 0.001, 0.001]
+# pca to reduce dimensions
+pca = PCA(n_components = 400) 
+X_train = pca.fit_transform(X_train) 
+X_val = pca.transform(X_val)
+X_test = pca.transform(X_test) 
 np.random.seed(123)
-p=0.8
-best_net = TwoLayerNetAdvanced(input_size, best_comb[0], num_classes)
-stats = best_net.train(X_train, y_train,p, X_val, y_val,
+
+p = 0.8
+beta1 = 0.9
+beta2 = 0.999
+eps = 1e-7
+start = time.time()
+np.random.seed(123)
+best_net = TwoLayerNetAdvanced(X_train.shape[1], best_comb[0], num_classes)
+stats = best_net.train(X_train, y_train,p, X_val, y_val, beta1, beta2, eps,
             num_iters=best_comb[1], batch_size=best_comb[2],
             learning_rate=best_comb[3], learning_rate_decay=0.95,
            reg=best_comb[4], verbose=True)
-
+print("code execution time: ",time.time() - start)
 # Predict on the validation set
 print('-----------')
 print('hidden size: ',best_comb[0], ', num_iters: ',best_comb[1], ', batch size: ',best_comb[2], ', learning_rate: ', best_comb[3], ', regula: ',best_comb[4] )
@@ -405,3 +436,6 @@ plt.xlabel('Epoch')
 plt.ylabel('Classification accuracy')
 plt.legend()
 plt.show()
+
+test_acc = (best_net.predict(X_test) == y_test).mean()
+print('Test accuracy: ', test_acc)
