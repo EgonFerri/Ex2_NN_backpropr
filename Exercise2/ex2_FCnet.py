@@ -275,15 +275,11 @@ best_net = None # store the best model into this
 
 # *****START OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
 
-
-
 """
 
 grid search to find the best hyper-parameters
 
 """
-
-
 
 # import itertools
 # from tqdm import tqdm 
@@ -320,8 +316,6 @@ grid search to find the best hyper-parameters
 
 
 import time
-from sklearn.decomposition import PCA
-
 start = time.time()
 
 best_comb = [250, 5000, 256, 0.001, 0.001]
@@ -357,7 +351,7 @@ plt.ylabel('Classification accuracy')
 plt.legend()
 plt.show()
 
-#check stability running more simulations
+#check stability running more simulations, since we have some randomness 
 #best_comb=[250, 5000, 256, 0.001, 0.001]
 #results_val=[]
 #results_train=[]
@@ -378,64 +372,13 @@ plt.show()
 
 
 # visualize the weights of the best network
-plt.figure(6)
+plt.figure(7)
 show_net_weights(best_net)
 
 
 # Run on the test set
 # When you are done experimenting, you should evaluate your final trained
 # network on the test set; you should get above 48%.
-
-test_acc = (best_net.predict(X_test) == y_test).mean()
-print('Test accuracy: ', test_acc)
-
-######### BONUS ADVANCED NEURAL NET #########
-
-
-from two_layernet_advanced import TwoLayerNetAdvanced
-
-best_comb = [250, 5000, 256, 0.001, 0.001]
-# pca to reduce dimensions
-pca = PCA(n_components = 400) 
-X_train = pca.fit_transform(X_train) 
-X_val = pca.transform(X_val)
-X_test = pca.transform(X_test) 
-np.random.seed(123)
-
-p = 0.8
-beta1 = 0.9
-beta2 = 0.999
-eps = 1e-7
-start = time.time()
-np.random.seed(123)
-best_net = TwoLayerNetAdvanced(X_train.shape[1], best_comb[0], num_classes)
-stats = best_net.train(X_train, y_train,p, X_val, y_val, beta1, beta2, eps,
-            num_iters=best_comb[1], batch_size=best_comb[2],
-            learning_rate=best_comb[3], learning_rate_decay=0.95,
-           reg=best_comb[4], verbose=True)
-print("code execution time: ",time.time() - start)
-# Predict on the validation set
-print('-----------')
-print('hidden size: ',best_comb[0], ', num_iters: ',best_comb[1], ', batch size: ',best_comb[2], ', learning_rate: ', best_comb[3], ', regula: ',best_comb[4] )
-val_acc = (best_net.predict(X_val) == y_val).mean()
-print('Validation accuracy: ', val_acc)
-print('------------')
-
-plt.figure(7)
-plt.subplot(2, 1, 1)
-plt.plot(stats['loss_history'])
-plt.title('Loss history')
-plt.xlabel('Iteration')
-plt.ylabel('Loss')
-
-plt.subplot(2, 1, 2)
-plt.plot(stats['train_acc_history'], label='train')
-plt.plot(stats['val_acc_history'], label='val')
-plt.title('Classification accuracy history')
-plt.xlabel('Epoch')
-plt.ylabel('Classification accuracy')
-plt.legend()
-plt.show()
 
 test_acc = (best_net.predict(X_test) == y_test).mean()
 print('Test accuracy: ', test_acc)
