@@ -113,7 +113,14 @@ class MultiLayerPerceptron(nn.Module):
         # *****START OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
         layers.append(nn.Linear(input_size, hidden_layers[0]))
         layers.append(nn.ReLU())
-        layers.append(nn.Linear(hidden_layers[0], num_classes))
+
+        # iterate through hidden layer list to add as many layer as wanted
+        # hidden layer is a list in which every item represent the numeber of neurons for that layer
+        for i in range(1, len(hidden_layers)-1):
+          layers.append(nn.Linear(hidden_layers[i-1], hidden_layers[i]))
+          layers.append(nn.ReLU())
+
+        layers.append(nn.Linear(hidden_layers[-1], num_classes))
 
 
         # *****END OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
@@ -172,7 +179,7 @@ if train:
             # *****START OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
 
             # Pass images to the model to compute predicted labels
-            images = images.view(-1, input_size)
+            images = images.view(images.size(0), -1) # reshape input
             pred_labels = model(images)
 
             # Compute the loss using the predicted labels and the actual labels.
@@ -205,8 +212,8 @@ if train:
                 # 2. Get the most confident predicted class        #
                 ####################################################
                 # *****START OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
-                images = images.view(-1, input_size)
-                predicted = torch.argmax(model(images), dim=1)
+                images = images.view(images.size(0), -1) # reshape input
+                predicted = torch.argmax(model(images), dim=1) # find class
 
 
                 # *****END OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
@@ -257,8 +264,8 @@ else:
             # 2. Get the most confident predicted class        #
             ####################################################
             # *****START OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
-            images = images.view(-1, input_size)
-            predicted = torch.argmax(model(images), dim=1)
+            images = images.view(images.size(0), -1) # reshape input
+            predicted = torch.argmax(model(images), dim=1) # find class
 
 
             # *****END OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
