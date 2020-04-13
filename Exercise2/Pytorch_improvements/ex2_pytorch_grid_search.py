@@ -286,8 +286,9 @@ for hypers in tqdm(grid):
   np.save(str(counter)+'_val_loss.npy', val_loss)
 
   # Save result in a dataframe
-  all_res.append({'N. layers': num_layers, 'Activation': str(activation_func), 'Optimizer': str(opt), 'Dropout': drop_layer, 'Batch Normalization': batch_norm_layer,
-                  'val_acc': (100 * best_score)})
+  all_res.append({'N. layers': num_layers, 'Batch Normalization': batch_norm_layer, 'Activation': str(activation_func),
+                  'Dropout': drop_layer, 'Optimizer': str(opt), 'Train acc': acc_tr, 'Val acc': (100 * best_score)})
+
   out_rs = pd.DataFrame(all_res)
   out_rs.to_csv('MLP_grid_search.csv', index=False)
 
