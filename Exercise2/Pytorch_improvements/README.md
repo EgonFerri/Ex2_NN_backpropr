@@ -9,8 +9,6 @@ List of file and folders related to Grid Search:
 
 - *metrics*, this folder contains *.npy* files (use `numpy load` to load them back as *type list*). Each file representing learning rate or train/validation loss/accuracy for each epoch is associated (through and index present in the file name) to a combination of hyperparameters.  
 
-- *data*, this folders contains *CIFAR10* image dataset.  
-
 
 List of file and folders related to TensorBoard:
 
