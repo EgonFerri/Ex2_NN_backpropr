@@ -12,7 +12,7 @@ List of file and folders related to Grid Search:
 - *data*, this folders contains *CIFAR10* image dataset.  
 
 
-List of file and folders related to Grid Search:
+List of file and folders related to TensorBoard:
 
 - *Tensorboard.py*, in this file is implemented the basic version of two-layered MPL using *tensorboardX* and *torchbearer* libraries. In this way it was possible to create the *logs* folder used to have some visualization in *TensorBoard*. To open *TensorBoard* panel, just run this file and open the resulting link.   
 
