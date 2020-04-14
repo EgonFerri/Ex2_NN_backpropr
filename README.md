@@ -1,6 +1,6 @@
 # Ex2_NN_backpropr
 
-The **Report.pdf** file, as can be seen, contains the report. The **assignement** folder includes all the codes and file developed to answer the 4 assignement question. More specifically, the folder is organized as follow:  
+The **Report.pdf** file, as can be seen, contains the report. The **assignement** folder includes all the codes and file developed to answer the 4 assignment questions. More specifically, the folder is organized as follow:  
 
 ### for Question 1  
 
